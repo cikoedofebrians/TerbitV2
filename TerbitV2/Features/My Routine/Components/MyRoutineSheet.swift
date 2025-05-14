@@ -8,15 +8,14 @@
 
 import SwiftUI
 
-import UIKit
 struct MyRoutineSheet: View {
-    
     @State var sheetSize: CGFloat = 0
     @State var currentDetent: PresentationDetent = .fraction(0.13)
     
     var body: some View {
         ScrollView ( showsIndicators: false) {
             VStack(alignment: .leading, spacing: 8) {
+
                 HStack {
                     VStack {
                         Text("Today Routine")
@@ -81,12 +80,5 @@ struct MyRoutineSheet: View {
         .presentationBackground(Color(uiColor: .secondarySystemBackground))
         .presentationBackgroundInteraction(.enabled)
         .interactiveDismissDisabled()
-    }
-}
-
-#Preview {
-    SkyBackground()
-    .sheet(isPresented: .constant(true)) {
-        MyRoutineSheet()
     }
 }

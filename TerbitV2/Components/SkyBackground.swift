@@ -26,11 +26,6 @@ struct SkyBackground: View {
                     endRadius: size.width * 0.8
                 )
                 .opacity(0.6)
-                .animation(
-                    .easeInOut(duration: 8.0)
-                    .repeatForever(autoreverses: true),
-                    value: animate
-                )
                 
                 RadialGradient(
                     gradient: Gradient(colors: cloudColors),
@@ -39,16 +34,14 @@ struct SkyBackground: View {
                     endRadius: size.width * 0.9
                 )
                 .opacity(0.4)
-                .animation(
-                    .easeInOut(duration: 10.0)
-                    .repeatForever(autoreverses: true),
-                    value: animate
-                )
             }
         }
         .ignoresSafeArea()
         .onAppear {
-            animate = true
+            withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true))  {
+                animate = true
+            }
+    
         }
     }
 }

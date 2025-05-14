@@ -7,11 +7,19 @@
 
 import SwiftUI
 
+// Import the CoreDataSeeder
+import CoreData
+
 @main
 struct TerbitV2App: App {
+    init() {
+        // Initialize the seeder on app launch
+        _ = CoreDataSeeder()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            MyRoutineView()
+            MyRoutineView(collectiblesViewModel: CollectiblesViewModel(), router: Router())
         }
     }
 }

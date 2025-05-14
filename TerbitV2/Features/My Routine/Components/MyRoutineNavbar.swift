@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct MyRoutineNavbar: View {
+    @Environment(Router.self) var router
+    
     @Binding var showCollectiblesSheet: Bool
     var body: some View {
         HStack (spacing: 16){
@@ -32,17 +34,7 @@ struct MyRoutineNavbar: View {
                 }
                 
                 VStack {
-                    ZStack {
-                        GeometryReader { geometry in
-                            Capsule()
-                                .fill(Color(UIColor.secondarySystemBackground))
-                                .frame(width: geometry.size.width)
-                            Capsule()
-                                .fill(.darkSky)
-                                .frame(width: geometry.size.width * 0.6)
-                        }
-                    }
-                    .frame(height: 5)
+                    TerbitProgressBar(progress: 0.6, height: 5)
                     HStack {
                         Text("XP")
                         Spacer()
@@ -59,6 +51,9 @@ struct MyRoutineNavbar: View {
                 Capsule()
                     .fill(.white)
             )
+            .onTapGesture {
+                router.push(.levelView)
+            }
             HStack(spacing: 10) {
                 Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                 Button {

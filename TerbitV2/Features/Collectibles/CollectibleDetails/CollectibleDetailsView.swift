@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectibleDetailsView: View {
-    let item: Collectible
+    let collectible: Collectible
     
     var body: some View {
         ZStack {
@@ -16,25 +16,27 @@ struct CollectibleDetailsView: View {
                 .ignoresSafeArea()
             ScrollView {
                 VStack (spacing: 16){
-                    Image(item.image)
-                        .resizable()
-                        .frame(maxWidth: .infinity)
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .padding(8)
-                        .background {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(.white)
-                        }
+                    if let imageName = collectible.image {
+                        Image(imageName)
+                            .resizable()
+                            .frame(maxWidth: .infinity)
+                            .aspectRatio(contentMode: .fit)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .padding(8)
+                            .background {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(.white)
+                            }
+                    }
                  
-                    CollectibleDetailsCard(item: item)
+                    CollectibleDetailsCard(collectible: collectible)
                 }
                 .padding(.horizontal, 16)
             }
             .toolbar {
                 
             }
-            if item.rarity == .legendary{
+            if collectible.rarity == .legendary {
                 VStack {
                     Spacer()
                     TerbitButton(title: "Wear Collectible") {
@@ -46,16 +48,4 @@ struct CollectibleDetailsView: View {
         }
        
     }
-}
-
-
-#Preview {
-//    SkyBackground()
-//        .sheet(isPresented: .constant(true)) {
-            NavigationStack {
-                CollectibleDetailsView(item: CollectibleData.dummyCollectibles[0])
-                .presentationDragIndicator(.visible)
-            }
-            .presentationBackground(Color(uiColor: .secondarySystemBackground))
-//        }
 }

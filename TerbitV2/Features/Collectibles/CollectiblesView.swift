@@ -10,24 +10,33 @@ import SwiftUI
 
 struct CollectiblesView: View {
     @Environment(\.dismiss) var dismiss
-    
-    
-    @State var collectiblesGroupedByRarity: [[Collectible]] = CollectibleData.getAllCollectiblesSortedByRarity()
+    @Environment(CollectiblesViewModel.self) var collectiblesViewModel: CollectiblesViewModel
     
     var body: some View {
+        @Bindable var collectiblesViewModel = collectiblesViewModel
         NavigationStack {
             ScrollView {
                 VStack (spacing: 0) {
+//                    Text("\(collectiblesViewModel.isLoading)")
+//                    
+//                    Button {
+//                        collectiblesViewModel.isLoading.toggle()
+//                    } label: {
+//                        Text("Trigger Loading")
+//                    }
+//                    
                     CollectiblesBadge()
-                        .padding(.bottom, 20)
-                    ForEach(0..<collectiblesGroupedByRarity.count, id: \.self) { index in
-                        CollectiblesSection(collectibles: collectiblesGroupedByRarity[index])
+                        .padding(.bottom, 20)               
+//                    ForEach(collectiblesViewModel.collectibles) { collectible in
+//                        CollectiblesCard(collectible: collectible)
+//                    }
+                    ForEach(0..<collectiblesViewModel.collectiblesGroupedByRarity.count, id: \.self) { index in
+                        CollectiblesSection(collectibles: collectiblesViewModel.collectiblesGroupedByRarity[index])
                             .padding(.bottom, 20)
                     }
-                    
                 }
                 .padding(16)
-
+                
             }
             .toolbar(content: {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -40,11 +49,4 @@ struct CollectiblesView: View {
         }
         .presentationBackground(Color(uiColor: .secondarySystemBackground))
     }
-}
-
-#Preview {
-    SkyBackground()
-        .sheet(isPresented: .constant(true)) {
-            CollectiblesView()
-        }
 }

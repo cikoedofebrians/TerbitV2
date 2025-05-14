@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct CollectibleDetailsCard: View {
-    let item: Collectible
+    let collectible: Collectible
     
     var body: some View {
         VStack {
             HStack {
-                
                 VStack (alignment: .leading, spacing: 4) {
-                    Text(item.name)
+                    Text(collectible.name ?? "")
                         .font(.poppins(.semiBold, size: 24))
                     Text("\"Dattebayo\"")
                         .font(.poppins(.regular, size: 16))
@@ -43,7 +42,7 @@ struct CollectibleDetailsCard: View {
                     .font(.poppins(.regular, size: 16))
                     .foregroundStyle(Color(uiColor: .secondaryLabel))
                 Spacer()
-                Text("\(item.obtainedAt.formatAsString())")
+                Text("\(collectible.obtainedAt?.formatAsString() ?? "-")")
                     .font(.poppins(.semiBold, size: 16))
             }
             
@@ -54,9 +53,4 @@ struct CollectibleDetailsCard: View {
                 .fill(.white)
         )
     }
-}
-
-
-#Preview {
-    CollectibleDetailsCard(item: CollectibleData.dummyCollectibles[0])
 }
