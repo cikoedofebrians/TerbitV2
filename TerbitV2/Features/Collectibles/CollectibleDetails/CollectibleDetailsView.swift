@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CollectibleDetailsView: View {
     let collectible: Collectible
+    @EnvironmentObject var collectiblesViewModel: CollectiblesViewModel
     
     var body: some View {
         ZStack {
@@ -28,20 +29,34 @@ struct CollectibleDetailsView: View {
                                     .fill(.white)
                             }
                     }
-                 
                     CollectibleDetailsCard(collectible: collectible)
+                        .padding(.bottom, collectible.skin != nil  ? 86 : 0)
                 }
                 .padding(.horizontal, 16)
             }
             .toolbar {
                 
             }
-            if collectible.rarity == .legendary {
+            if collectible.skin != nil {
                 VStack {
                     Spacer()
-                    TerbitButton(title: "Wear Collectible") {
-                        
+                    if collectiblesViewModel.currentSkin?.name != collectible.skin?.name {
+                        TerbitButton(title: "Wear Collectible") {
+                            withAnimation {
+                                if collectiblesViewModel.currentSkin?.name != collectible.skin?.name {
+                                    collectiblesViewModel.changeSkin(collectible: collectible)
+                                }
+                            }
+                        }
+                    } else {
+                        TerbitButton(title: "Unequip Collectible", buttonStyle: .destructive) {
+                            withAnimation {
+                                collectiblesViewModel.changeSkin(collectible: nil)
+                            }
+                        }
+                            
                     }
+                    
                 }
                 .padding(.horizontal, 16)
             }

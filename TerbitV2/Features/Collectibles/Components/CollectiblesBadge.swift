@@ -8,14 +8,20 @@
 import SwiftUI
 
 struct CollectiblesBadge: View {
+    @EnvironmentObject var collectiblesViewModel: CollectiblesViewModel
+    
+    var percentage: Double{
+        Double((collectiblesViewModel.collectibles.filter { $0.obtained }.count))/Double(collectiblesViewModel.collectibles.count)
+    }
+    
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("8")
+                Text("\(collectiblesViewModel.collectibles.filter { $0.obtained }.count)")
                     .font(.poppins(.semiBold, size: 48))
                     .foregroundStyle(.darkSky)
                 +
-                Text(" / 25")
+                Text(" / \(collectiblesViewModel.collectibles.count)")
                     .font(.poppins(.semiBold, size: 20))
                     .foregroundStyle(Color(uiColor: .secondaryLabel))
                 Text("Collectibles discovered")
@@ -26,7 +32,7 @@ struct CollectiblesBadge: View {
             .padding(.bottom, 16)
             Spacer()
             Circle()
-                .trim(from: 0, to: 0.25)
+                .trim(from: 0, to: percentage)
                 .stroke(style: StrokeStyle(lineWidth: 10, lineCap: .round))
                 .foregroundStyle(.darkSky)
                 .rotationEffect(.degrees(-90))
@@ -38,7 +44,7 @@ struct CollectiblesBadge: View {
                         .foregroundStyle(Color(uiColor: .quaternaryLabel))
                 }
                 .overlay {
-                    Text("75%")
+                    Text(percentage.toPercentageString())
                         .font(.poppins(.semiBold, size: 20))
                         .foregroundStyle(.darkSky)
                 }

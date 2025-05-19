@@ -29,7 +29,7 @@ struct CollectiblesSection: View {
             }
             LazyVGrid(columns: columns) {
                 ForEach(collectibles) { collectible in
-                    CollectiblesCard(collectible: collectible)                }
+                    CollectiblesCard(collectible: .constant(collectible))                }
             }
         }
     }

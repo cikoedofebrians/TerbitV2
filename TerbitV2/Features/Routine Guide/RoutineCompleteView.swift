@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct RoutineCompleteView: View {
-    @Environment(Router.self) var router
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var levelViewModel: LevelsViewModel
+    @EnvironmentObject var myRoutineViewModel: MyRoutineViewModel
+    @EnvironmentObject var collectiblesViewModel: CollectiblesViewModel
     @State var showMessage = false
     @State var showAlert = false
     
@@ -20,15 +23,18 @@ struct RoutineCompleteView: View {
                     .font(.poppins(.bold, size: 24))
                     .foregroundStyle(.white)
                     .padding(.bottom, 42)
-                Image(.mentariCongrats)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: UIScreen.main.bounds.width * 0.9)
-                    .onTapGesture {
-                        withAnimation {
-                            showMessage.toggle()
+                if let skin = collectiblesViewModel.currentSkin {
+                    Image(skin.congratulations ?? "")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: UIScreen.main.bounds.width * 0.9)
+                        .onTapGesture {
+                            withAnimation {
+                                showMessage.toggle()
+                            }
                         }
-                    }
+                }
+                
                 HStack {
                     VStack {
                         Image(.xpToken)
@@ -82,6 +88,12 @@ struct RoutineCompleteView: View {
             }
             .padding(.horizontal, 16)
         }
+        .onAppear(perform: {
+            levelViewModel.addXPToLevel(xp: 80)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                myRoutineViewModel.completeRoutine()
+            }
+        })
         .alert("Don't Miss Your Roll!", isPresented: $showAlert, actions: {
             Button(role: .cancel) {
                 
@@ -93,15 +105,10 @@ struct RoutineCompleteView: View {
             } label: {
                 Text("Skip")
             }
-
+            
         }, message: {
             Text("Leaving now means giving up your Gacha Token. Are you sure?")
         })
         .navigationBarBackButtonHidden()
     }
-}
-
-#Preview {
-    RoutineCompleteView()
-        .environment(Router())
 }

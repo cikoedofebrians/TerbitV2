@@ -41,11 +41,10 @@ struct SkyBackground: View {
             withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true))  {
                 animate = true
             }
-    
         }
     }
 }
-//
+
 #Preview {
     SkyBackground()
 }

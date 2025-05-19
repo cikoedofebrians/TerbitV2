@@ -19,7 +19,7 @@ struct TerbitV2App: App {
     
     var body: some Scene {
         WindowGroup {
-            MyRoutineView(collectiblesViewModel: CollectiblesViewModel(), router: Router())
+            MyRoutineView(myRoutineViewModel: MyRoutineViewModel(), collectiblesViewModel: CollectiblesViewModel(), levelViewModel: LevelsViewModel(), router: Router())
         }
     }
 }

@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct MyRoutineNavbar: View {
-    @Environment(Router.self) var router
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var levelViewModel: LevelsViewModel
     
     @Binding var showCollectiblesSheet: Bool
     var body: some View {
@@ -24,21 +25,37 @@ struct MyRoutineNavbar: View {
                         .fill(Color.white.opacity(0.2))
                         .stroke(Color.white, style: StrokeStyle(lineWidth: 1))
                 )
+                .onTapGesture {
+                    router.push(.profileView)
+                }
             
             HStack {
                 ZStack {
                     Image(.levelBackgroundSmall)
-                    Text("4")
+                    Text("\(levelViewModel.currentLevel?.number ?? 0)")
                         .font(.poppins(.bold, size: 20))
                         .foregroundStyle(.white)
                 }
+                .overlay {
+                    if levelViewModel.checkIfCollectiblesUnopened() {
+                        Image(systemName: "exclamationmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(8)
+                            .background {
+                                Circle()
+                                    .fill(.red)
+                            }
+                            .offset(x: 16, y: -16)
+                    }
+                }
                 
                 VStack {
-                    TerbitProgressBar(progress: 0.6, height: 5)
+                    TerbitProgressBar(progress: Double(levelViewModel.currentLevel?.currentXP ?? 0) / Double(levelViewModel.currentLevel?.neededXP ?? 0), height: 5)
                     HStack {
                         Text("XP")
                         Spacer()
-                        Text("347/400")
+                        Text("\(levelViewModel.currentLevel?.currentXP ?? 0)/\(levelViewModel.currentLevel?.neededXP ?? 0)")
                             .fontWeight(.semibold)
                     }
                     .font(.poppins(.regular, size: 12))

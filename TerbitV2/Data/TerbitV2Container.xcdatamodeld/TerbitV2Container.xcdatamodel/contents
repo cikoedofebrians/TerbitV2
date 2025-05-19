@@ -8,5 +8,24 @@
         <attribute name="obtained" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="obtainedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="rarityValue" optional="YES" attributeType="String"/>
+        <relationship name="level" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Level" inverseName="collectible" inverseEntity="Level"/>
+        <relationship name="skin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Skin" inverseName="collectible" inverseEntity="Skin"/>
+    </entity>
+    <entity name="Level" representedClassName="Level" syncable="YES" codeGenerationType="class">
+        <attribute name="currentXP" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="neededXP" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="number" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="collectible" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Collectible" inverseName="level" inverseEntity="Collectible"/>
+    </entity>
+    <entity name="Skin" representedClassName="Skin" syncable="YES" codeGenerationType="class">
+        <attribute name="afterRoutine" optional="YES" attributeType="String"/>
+        <attribute name="beforeRoutine" optional="YES" attributeType="String"/>
+        <attribute name="congratulations" optional="YES" attributeType="String"/>
+        <attribute name="dizzy" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="used" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="collectible" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Collectible" inverseName="skin" inverseEntity="Collectible"/>
     </entity>
 </model>

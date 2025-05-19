@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CollectiblesCard: View {
-//    @Environment(CollectiblesViewModel.self) var collectiblesViewModel
-    @Environment(CollectiblesViewModel.self) var collectiblesViewModel: CollectiblesViewModel
-    @Environment(Router.self) var router
+    @EnvironmentObject var collectiblesViewModel: CollectiblesViewModel
+    @EnvironmentObject var router: Router
     
-    let collectible: Collectible
+    @Binding var collectible: Collectible
+    
     var body: some View {
         NavigationLink {
             CollectibleDetailsView(collectible: collectible)
@@ -21,30 +21,37 @@ struct CollectiblesCard: View {
                 .resizable()
                 .scaledToFit()
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .onTapGesture {
-                router.push(.collectibleDetails(collectible))
-            }
-            .padding(4)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white)
-            )
-            .overlay {
-                if !collectible.obtained {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.black.opacity(0.6))
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 24))
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white)
+                )
+                .overlay(alignment: .topTrailing) {
+        
+                    if collectible.obtained && collectible.skin != nil {
+                        Image(systemName: "hanger")
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(.white)
+                            .padding(8)
+                            .background {
+                                Circle()
+                                    .fill(collectiblesViewModel.currentSkin?.id == collectible.skin?.id ? Color.yellow.opacity(0.3)  : Color.black.opacity(0.2))
+                            }
+                            .padding(8)
+                        
                     }
-
+                    if !collectible.obtained {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.6))
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 24))
+                                .foregroundStyle(.white)
+                        }
+                        
+                    }
                 }
-            }
         }
         .disabled(!collectible.obtained)
-                .onTapGesture {
-                        collectiblesViewModel.unlockCollectible(collectible)
-                }
     }
 }

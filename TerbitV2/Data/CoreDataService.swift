@@ -44,7 +44,8 @@ class DataService {
     /// - Returns: An array of `objectType` objects.
     func fetch<T: NSManagedObject>(_ objectType: T.Type,
                                    predicate: NSPredicate? = nil,
-                                   sortDescriptors: [NSSortDescriptor]? = nil) throws -> [T] {
+                                   sortDescriptors: [NSSortDescriptor]? = nil
+    ) throws -> [T] {
         let fetchRequest = NSFetchRequest<T>(entityName: String(describing: objectType))
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sortDescriptors

@@ -9,8 +9,11 @@
 import SwiftUI
 
 struct GachaView: View {
-    @Environment(Router.self) var router
-    @State var gachaViewModel: GachaViewModel
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var collectiblesViewModel: CollectiblesViewModel
+    @StateObject var gachaViewModel: GachaViewModel
+    @EnvironmentObject var levelViewModel: LevelsViewModel
+    
     
     var body: some View {
         ZStack {
@@ -18,8 +21,8 @@ struct GachaView: View {
             switch gachaViewModel.gachaState {
             case .chest(let onRolling):
                 chestView(onRolling: onRolling)
-            case .collectibleObtained(let collectible, let isNew):
-                collectibleView(collectible: collectible, isNew: isNew)
+            case .collectibleObtained(let collectible, let isDuplicate):
+                collectibleView(collectible: collectible, isDuplicate: isDuplicate)
             }
         }
         .onTapGesture {
@@ -59,8 +62,8 @@ extension GachaView {
     }
     
     @ViewBuilder
-    private func collectibleView(collectible: Collectible, isNew: Bool) -> some View {
-        collectibleCard(collectible: collectible, isNew: isNew)
+    private func collectibleView(collectible: Collectible, isDuplicate: Bool) -> some View {
+        collectibleCard(collectible: collectible, isDuplicate: isDuplicate)
             .padding(.top, 40)
         
         VStack {
@@ -74,11 +77,11 @@ extension GachaView {
                 .foregroundStyle(.white)
                 .transition(.opacity)
         }
-        .padding(.vertical, UIScreen.main.bounds.height * 0.1)
+        .padding(.vertical, UIScreen.main.bounds.height * 0.05)
         
     }
     
-    private func collectibleCard(collectible: Collectible, isNew: Bool) -> some View {
+    private func collectibleCard(collectible: Collectible, isDuplicate: Bool) -> some View {
         VStack(spacing: 0) {
             Image(collectible.image ?? "")
                 .resizable()
@@ -91,11 +94,37 @@ extension GachaView {
                         .fill(.white)
                 }
                 .overlay(alignment: .topLeading) {
-                    if isNew {
+                    if !isDuplicate {
                         newBadge()
                     }
                 }
                 .transition(.scale.combined(with: .opacity))
+            
+            if gachaViewModel.showDuplicate {
+                VStack {
+                    Text("Converted into:")
+                        .font(.poppins(.medium, size: 12))
+                        
+                    HStack {
+                        Image(.xpToken)
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                            .scaledToFit()
+                            .padding(.trailing, 4)
+                        Text("+\(collectible.xpValue)")
+                            .font(.poppins(.semiBold, size: 16))
+                    }
+                }
+                .frame(width: UIScreen.main.bounds.width * 0.5)
+                .padding(.vertical, 12)
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.black.opacity(0.1))
+                }
+                .padding(.top, 16)
+                .foregroundStyle(.white)
+            }
+            
             
             Text(collectible.name ?? "-")
                 .font(.poppins(.semiBold, size: 20))
@@ -109,6 +138,18 @@ extension GachaView {
                 .foregroundStyle(.white)
                 .padding(.top, 4)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+        .onAppear {
+            if collectible.obtained {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation {
+                        gachaViewModel.showDuplicate = true
+                    }
+                }
+                levelViewModel.addXPToLevel(xp: collectible.xpValue)
+            }else {
+                collectiblesViewModel.unlockCollectible(collectible)
+            }
         }
         .padding(.horizontal, 16)
     }

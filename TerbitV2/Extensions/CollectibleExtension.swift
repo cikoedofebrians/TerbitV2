@@ -11,7 +11,10 @@ enum CollectibleRarity: String, CaseIterable {
     case rare
     case epic
     case legendary
+
 }
+
+
 
 
 extension Collectible {
@@ -27,6 +30,19 @@ extension Collectible {
             return .legendary
         default:
             return .common
+        }
+    }
+    
+    var xpValue: Int {
+        switch self.rarity {
+        case .common:
+            return 10
+        case .rare:
+            return 25
+        case .epic:
+            return 50
+        case .legendary:
+            return 100
         }
     }
 }

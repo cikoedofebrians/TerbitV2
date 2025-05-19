@@ -4,74 +4,47 @@
 //
 //  Created by Ciko Edo Febrian on 09/05/25.
 //
-
-
 import SwiftUI
 
 struct MyRoutineView: View {
     // environment objects
-    @State var collectiblesViewModel: CollectiblesViewModel
-    @State var router: Router
-    
-    @State var sheetHeight: CGFloat = 0
-    @State var showCollectiblesSheet: Bool = false
-    @State var showTodayRoutineSheet: Bool = true
-    @State var mentariOffset: CGSize = .zero
-    @State var mentariAnimation: Bool = false
+    @StateObject var myRoutineViewModel: MyRoutineViewModel
+    @StateObject var collectiblesViewModel: CollectiblesViewModel
+    @StateObject var levelViewModel: LevelsViewModel
+    @StateObject var router: Router
     
     var body: some View {
         NavigationStack(path: $router.path) {
             ZStack {
                 SkyBackground()
                 VStack(alignment: .center) {
-                    MyRoutineNavbar(showCollectiblesSheet: $showCollectiblesSheet)
+                    MyRoutineNavbar(showCollectiblesSheet: $myRoutineViewModel.showCollectiblesSheet)
                     Spacer()
-//                    NavigationLink {
-//                        CollectiblesView()
-//                    } label: {
-//                        Text("TEst")
-//                    }
-                    Image(mentariOffset == .zero ? .mentariAfterRoutine : .mentariDizzy)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
-                        .clipped()
-                        .offset(mentariOffset)
-                        .scaleEffect(mentariAnimation ? 1.1 : 1)
-                        .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: mentariAnimation)
-                        .gesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    withAnimation(.easeInOut(duration: 0.1)) {
-                                        mentariOffset = value.translation
-                                    }
-                                }
-                                .onEnded { _ in
-                                    withAnimation(.easeInOut) {
-                                        mentariOffset = .zero
-                                    }
-                                }
-                        )
+                    Mentari()
+                    Spacer()
                     
-                    Spacer()
-                    TerbitButton(title: "Begin Routine") {
-                        router.push(.routineCompleteView)
-                    }
-                    .padding(.vertical, 16)
-                    .onAppear {
-                        mentariAnimation = true
+                    if !myRoutineViewModel.limitRoutine || !myRoutineViewModel.haveClearedRoutine {
+                        TerbitButton(title: "Begin Routine") {
+                            router.push(.routineCompleteView)
+                            
+                        }
+                        .padding(.vertical, 16)
                     }
                     Color.clear.frame(height: UIScreen.main.bounds.height * 0.13)
-                    
+                }
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        myRoutineViewModel.mentariAnimation = true
+                    }
                 }
                 .padding(.horizontal, 16)
             }
 
             .sheet(isPresented: $router.isOnRoot, content: {
                 MyRoutineSheet()
-                    .sheet(isPresented: $showCollectiblesSheet) {
+                    .sheet(isPresented: $myRoutineViewModel.showCollectiblesSheet) {
                         CollectiblesView()
-                            .environment(collectiblesViewModel)
+                            .environmentObject(collectiblesViewModel)
                             .presentationDragIndicator(.visible)
                             .presentationBackground(Color.black)
                     }
@@ -86,12 +59,17 @@ struct MyRoutineView: View {
                     LevelsView()
                 case .collectibleDetails(let collectible):
                     CollectibleDetailsView(collectible: collectible)
+                case .profileView:
+                    ProfileView()
                 }
                 
             }
         }
-        .environment(collectiblesViewModel)
-        .environment(router)
+        .environmentObject(myRoutineViewModel)
+        .environmentObject(levelViewModel)
+        .environmentObject(collectiblesViewModel)
+        .environmentObject(router)
      
     }
 }
+

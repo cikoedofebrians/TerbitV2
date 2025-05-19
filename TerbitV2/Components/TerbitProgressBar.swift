@@ -15,7 +15,7 @@ struct TerbitProgressBar: View {
         ZStack {
             GeometryReader { geometry in
                 Capsule()
-                    .fill(Color(UIColor.secondarySystemBackground))
+                    .fill(Color.black.opacity(0.1))
                     .frame(width: geometry.size.width)
                 Capsule()
                     .fill(.darkSky)

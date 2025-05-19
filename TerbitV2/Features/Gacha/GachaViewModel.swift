@@ -5,31 +5,59 @@
 //  Created by Ciko Edo Febrian on 13/05/25.
 //
 
-import Observation
 import SwiftUI
-
 
 enum GachaState {
     case chest(onRolling: Bool)
-    case collectibleObtained(collectible: Collectible, isNew: Bool)
+    case collectibleObtained(collectible: Collectible, isDuplicate: Bool)
 }
 
-@Observable
-class GachaViewModel {
+
+class GachaViewModel: ObservableObject {
     let collectiblesViewModel: CollectiblesViewModel
     
     init(collectiblesViewModel: CollectiblesViewModel) {
         self.collectiblesViewModel = collectiblesViewModel
     }
     
-    var gachaState: GachaState = .chest(onRolling: false)
-    var showConfetti: Bool = false
+    @Published var gachaState: GachaState = .chest(onRolling: false)
+    @Published var showConfetti: Bool = false
     
-    var wiggleAnimation = false
-    var scaleAnimation = false
-    var rotationDegrees = 0.0
-    var opacityAnimation = 1.0
-    var isAnimating = false
+    @Published var wiggleAnimation = false
+    @Published var scaleAnimation = false
+    @Published var rotationDegrees = 0.0
+    @Published var opacityAnimation = 1.0
+    @Published var isAnimating = false
+    @Published var showDuplicate: Bool = false
+    
+    func rollCollectible() -> Collectible {
+        let rarityWeights: [CollectibleRarity: Int] = [
+            .common: 60,
+            .rare: 25,
+            .epic: 10,
+            .legendary: 5
+        ]
+        
+        let totalWeight = rarityWeights.values.reduce(0, +)
+        let randomValue = Int.random(in: 0...totalWeight)
+        
+        var cumulativeWeight = 0
+        var selectedRarity: CollectibleRarity = .common
+        
+        for (rarity, weight) in rarityWeights {
+            cumulativeWeight += weight
+            if randomValue <= cumulativeWeight {
+                selectedRarity = rarity
+                break
+            }
+        }
+        
+        let availableCollectibles = collectiblesViewModel.getCollectibleByRarity(selectedRarity)
+        let randomIndex = Int.random(in: 0..<availableCollectibles.count)
+        let selectedCollectible = availableCollectibles[randomIndex]
+        
+        return selectedCollectible
+    }
     
     
     func playChestAnimationSequence() {
@@ -40,7 +68,7 @@ class GachaViewModel {
             wiggleAnimation.toggle()
         }
         
-        // Step 2: After wiggling, show open chest and start scaling
+    
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             // Set to open chest
             withAnimation(.easeIn(duration: 0.2)) {
@@ -62,7 +90,8 @@ class GachaViewModel {
                 // Step 4: Show the result with confetti
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
-                        self.gachaState = .collectibleObtained(collectible: self.collectiblesViewModel.collectibles.randomElement()!, isNew: true)
+                        let selectedCollectible = self.rollCollectible()
+                        self.gachaState = .collectibleObtained(collectible: selectedCollectible, isDuplicate: selectedCollectible.obtained)
                         self.showConfetti = true
                     }
                 }

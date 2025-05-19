@@ -5,15 +5,12 @@
 //  Created by Ciko Edo Febrian on 13/05/25.
 //
 
-import Observation
+import SwiftUI
 
-@Observable
-class Router {
-    var isOnRoot: Bool = true
-    
-    
-    
-    var path: [Routes] = [] {
+class Router: ObservableObject {
+    @Published var isOnRoot: Bool = true
+
+    @Published var path: [Routes] = [] {
         didSet {
             isOnRoot = path.isEmpty
         }

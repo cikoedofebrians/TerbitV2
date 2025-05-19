@@ -51,11 +51,11 @@ struct MyRoutineSheet: View {
                     }
                     .font(.poppins(.medium, size: 16))
                     Divider()
-                    RoutineItem(systemName: "figure.walk", title: "Walking", duration: 2)
+                    RoutineItem(systemName: "figure.walk", title: "Walking", duration: 5)
                     Divider()
-                    RoutineItem(systemName: "figure.walk", title: "Walking", duration: 2)
+                    RoutineItem(systemName: "wind", title: "Mindful Breathing", duration: 2)
                     Divider()
-                    RoutineItem(systemName: "figure.walk", title: "Walking", duration: 2)
+                    RoutineItem(systemName: "figure.yoga", title: "Stretching", duration: 3)
                 }
                 .padding()
                 .background(
@@ -74,7 +74,6 @@ struct MyRoutineSheet: View {
   
         }
         .presentationDetents([.height(sheetSize), .fraction(0.13)])
-        
         .scrollDisabled(true)
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(uiColor: .secondarySystemBackground))

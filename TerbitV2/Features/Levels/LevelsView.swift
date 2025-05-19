@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct LevelsView: View {
-    @Environment(Router.self) var router
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var levelViewModel: LevelsViewModel
+    @State var scrollId: UUID? = nil
+    @State var isViewShown: Bool = false
+    @State var isOnScrolling: Bool = false
+    
     var body: some View {
         ZStack {
             SkyBackground()
@@ -34,90 +39,40 @@ struct LevelsView: View {
             VStack (spacing: 16) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
-                        ForEach(1..<6) { index in
-                            VStack(spacing: 0) {
-                                Text("Level")
-                                    .font(.poppins(.semiBold, size: 24))
-                                    .foregroundStyle(.white)
-                                    .padding(.vertical, 24)
-                                Image(.levelBackgroundLarge)
-                                    .overlay {
-                                        Text("\(index)")
-                                            .font(.poppins(.bold, size: 48))
-                                            .foregroundStyle(.white)
-                                    }
-                                Text("Reward")
-                                    .font(.poppins(.semiBold, size: 16))
-                                    .foregroundStyle(.white)
-                                    .padding(.top, 48)
-                                Image(.pokerMentari)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 80)
-                                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    .padding(2)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(.white)
-                                    }
-                                    .padding(.top, 12)
-                                    .padding(.bottom, 32)
-                                
-                            }
-                            .frame(width: UIScreen.main.bounds.width * 0.75)
-                            .background {
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.black.opacity(0.1))
-                                    .strokeBorder(Color.white, lineWidth: 1)
-                            }
-                            .scrollTransition { content, phase in
-                                content
-                                    .scaleEffect(y: phase.isIdentity ? 1 : 0.9)
-                                    .blur(radius: phase.isIdentity ? 0 : 1)
-                            }
-                            
+                        ForEach(levelViewModel.levels) { level in
+                            LevelsCard(level: level, unlocked: levelViewModel.checkIfLevelUnlocked(id: level.id ?? UUID()), isViewShown: $isViewShown)
+                                .id(level.id)
                         }
                     }
                     .scrollTargetLayout()
                 }
-                VStack(spacing: 12) {
-                    HStack {
-                        Text("Progress")
-                            .font(.poppins(.semiBold, size: 16))
-                        Spacer()
-                        Image(systemName: "medal.fill")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.yellow)
-                    }
-                    TerbitProgressBar(progress: 0.9, height: 6)
-                    HStack {
-                        Text("120")
-                            .foregroundStyle(.darkSky) + Text(" / 150")
-                            .foregroundStyle(Color(uiColor: .secondaryLabel))
-                            .fontWeight(.medium)
-                        Spacer()
-                        Text("91%")
-                            .foregroundStyle(.darkSky)
-                        
-                    }
-                    .font(.poppins(.semiBold, size: 16))
-                }
-                .padding(16)
-                .frame(width: UIScreen.main.bounds.width * 0.75)
-                .background {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(.white)
+                if let selectedLevel = levelViewModel.levels.first(where: { $0.id == scrollId }) {
+//                    if  !isOnScrolling {
+                    LevelsProgess(selectedLevel: selectedLevel)
+                        .transition(.opacity)
+//                    }
+
                 }
             }
             .padding(.top, 32)
             .contentMargins(.horizontal, UIScreen.main.bounds.width * 0.25 / 2, for: .scrollContent)
-            .scrollTargetBehavior(.)
+            .scrollPosition(id: $scrollId)
+            .scrollTargetBehavior(.viewAligned)
+            .onAppear(perform: {
+                if let currentLevel = levelViewModel.currentLevel  {
+                    withAnimation(.bouncy(extraBounce: 0.1)) {
+                        scrollId = currentLevel.id
+                    }
+                }
+            })
             .navigationBarBackButtonHidden()
         }
+        .overlay {
+            if let collectible = levelViewModel.levels.first(where: { $0.id == scrollId })?.collectible {
+                if isViewShown {
+                    LevelsCollectibleUnlocked(isViewShown: $isViewShown, collectible: collectible)
+                }
+            }
+        }
     }
-}
-
-#Preview {
-    LevelsView()
-        .environment(Router())
 }

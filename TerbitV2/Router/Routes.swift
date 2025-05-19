@@ -11,4 +11,5 @@ enum Routes: Hashable {
     case gachaView
     case levelView
     case collectibleDetails(Collectible)
+    case profileView
 }

@@ -8,9 +8,17 @@
 
 import SwiftUI
 
+enum TerbitButtonStyle: Equatable {
+    case normal
+    case destructive
+}
+
 struct TerbitButton: View {
+
     let title: String
+    var buttonStyle: TerbitButtonStyle = .normal
     let action: () -> Void
+
     
     var body: some View {
         Button {
@@ -23,10 +31,10 @@ struct TerbitButton: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(.amber)
+                        .fill(buttonStyle == .normal ? .amber : .destructiveRed)
                         .background(
                             UnevenRoundedRectangle(cornerRadii: RectangleCornerRadii(bottomLeading: 8, bottomTrailing: 8))
-                                .fill(.amberShadow)
+                                .fill(buttonStyle == .normal ? .amberShadow : .destructiveRedShadow)
                                 .offset(y: 5)
                         )
                 )
@@ -35,7 +43,7 @@ struct TerbitButton: View {
 }
 
 #Preview {
-    TerbitButton(title: "Begin Routine") {
-        
+    TerbitButton(title: "Cancel", buttonStyle: .destructive) {
+        print("Button pressed")
     }
 }
